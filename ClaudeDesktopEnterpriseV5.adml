@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policyDefinitionResources
+  revision="1.0"
+  schemaVersion="1.0"
+  xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitionResources">
+
+  <displayName>Claude Desktop Enterprise Policies</displayName>
+  <description>Administrative Template resources for Claude Desktop enterprise policies.</description>
+
+  <resources>
+
+    <stringTable>
+      <string id="SUPPORTED_ClaudeDesktop">Claude Desktop for Windows</string>
+
+      <string id="CAT_ClaudeDesktop">Claude Desktop</string>
+      <string id="CAT_Authentication">Authentication</string>
+      <string id="CAT_Updates">Automatic Updates</string>
+      <string id="CAT_ClaudeCode">Claude Code</string>
+      <string id="CAT_Cowork">Cowork</string>
+      <string id="CAT_Features">Features</string>
+
+      <string id="DisableAutoUpdates">Disable Automatic Updates</string>
+      <string id="DisableAutoUpdates_Help">Controls automatic updates for Claude Desktop. Enabled disables automatic updates. Disabled allows automatic updates. Registry value: disableAutoUpdates. Registry type: REG_DWORD. Machine-level policy takes precedence over user-level policy.</string>
+
+      <string id="AutoUpdaterHours">Automatic Update Enforcement Hours</string>
+      <string id="AutoUpdaterHours_Help">Specifies how many hours Claude Desktop can wait before applying a prepared update. Valid range: 1 through 72 hours. Registry value: autoUpdaterEnforcementHours. Registry type: REG_DWORD.</string>
+
+      <string id="ForceLoginOrgUUID">Force Login Organization UUID</string>
+      <string id="ForceLoginOrgUUID_Help">Restricts Claude Desktop login to one or more organization UUID values. Enter a single UUID or a JSON array such as [&quot;uuid-1&quot;,&quot;uuid-2&quot;]. Registry value: forceLoginOrgUUID. Registry type: REG_SZ.</string>
+
+      <string id="DesktopExtension">Enable Desktop Extensions</string>
+      <string id="DesktopExtension_Help">Controls whether Claude Desktop extensions are enabled. Registry value: isDesktopExtensionEnabled. Registry type: REG_DWORD.</string>
+
+      <string id="ExtensionDirectory">Enable Desktop Extension Directory</string>
+      <string id="ExtensionDirectory_Help">Controls access to the Claude Desktop extension directory. Registry value: isDesktopExtensionDirectoryEnabled. Registry type: REG_DWORD.</string>
+
+      <string id="LocalMCP">Enable Local Development MCP Servers</string>
+      <string id="LocalMCP_Help">Controls whether local development MCP servers are available in Claude Desktop. Registry value: isLocalDevMcpEnabled. Registry type: REG_DWORD.</string>
+
+      <string id="ClaudeCodeDesktop">Enable Claude Code for Desktop</string>
+      <string id="ClaudeCodeDesktop_Help">Controls whether Claude Code is available from Claude Desktop. Registry value: isClaudeCodeForDesktopEnabled. Registry type: REG_DWORD.</string>
+
+      <string id="EffortLevel">Default Claude Code Effort Level</string>
+      <string id="EffortLevel_Help">Defines the default effort level for new Claude Code sessions. Registry value: effortLevel. Registry type: REG_SZ.</string>
+
+      <string id="EffortLow">Low</string>
+      <string id="EffortMedium">Medium</string>
+      <string id="EffortHigh">High</string>
+      <string id="EffortXHigh">Extra High</string>
+      <string id="EffortMax">Maximum</string>
+
+      <string id="SecureVM">Enable Secure VM and Cowork Features</string>
+      <string id="SecureVM_Help">Controls access to Secure VM and Cowork functionality. Registry value: secureVmFeaturesEnabled. Registry type: REG_DWORD.</string>
+
+      <string id="AllowedWorkspaceFolders">Allowed Workspace Folders</string>
+      <string id="AllowedWorkspaceFolders_Help">Defines file-system paths that users may mount into Cowork. Enter a JSON array such as [&quot;C:\\Users\\Public\\Documents&quot;,&quot;D:\\CompanyData&quot;]. Registry value: allowedWorkspaceFolders. Registry type: REG_SZ.</string>
+
+      <string id="CoworkEDRIntegration">Cowork EDR Sensor Package Path</string>
+      <string id="CoworkEDRIntegration_Help">Specifies the full local path of the signed EDR sensor package. This policy is available only under Computer Configuration. Registry value: coworkEDRIntegration. Registry type: REG_SZ.</string>
+
+      <string id="CoworkEDRVendor">Cowork EDR Integration Vendor</string>
+      <string id="CoworkEDRVendor_Help">Specifies the EDR vendor identifier. Enter the vendor identifier in lowercase. This policy is available only under Computer Configuration. Registry value: coworkEDRIntegrationVendor. Registry type: REG_SZ.</string>
+    </stringTable>
+
+    <presentationTable>
+
+      <presentation id="AutoUpdaterEnforcementHoursMachine">
+        <decimalTextBox refId="AutoUpdaterHoursValue" defaultValue="72" spin="true">Hours before forcing update:</decimalTextBox>
+      </presentation>
+
+      <presentation id="AutoUpdaterEnforcementHoursUser">
+        <decimalTextBox refId="AutoUpdaterHoursUserValue" defaultValue="72" spin="true">Hours before forcing update:</decimalTextBox>
+      </presentation>
+
+      <presentation id="ForceLoginOrgUUIDMachine">
+        <textBox refId="ForceLoginOrgUUIDValue"><label>Organization UUID or JSON UUID array:</label></textBox>
+      </presentation>
+
+      <presentation id="ForceLoginOrgUUIDUser">
+        <textBox refId="ForceLoginOrgUUIDUserValue"><label>Organization UUID or JSON UUID array:</label></textBox>
+      </presentation>
+
+      <presentation id="EffortLevelMachine">
+        <dropdownList refId="EffortLevelValue" defaultItem="2">Default effort level:</dropdownList>
+      </presentation>
+
+      <presentation id="EffortLevelUser">
+        <dropdownList refId="EffortLevelUserValue" defaultItem="2">Default effort level:</dropdownList>
+      </presentation>
+
+      <presentation id="AllowedWorkspaceFoldersMachine">
+        <textBox refId="AllowedWorkspaceFoldersValue"><label>Allowed workspace folders as a JSON array:</label></textBox>
+      </presentation>
+
+      <presentation id="AllowedWorkspaceFoldersUser">
+        <textBox refId="AllowedWorkspaceFoldersUserValue"><label>Allowed workspace folders as a JSON array:</label></textBox>
+      </presentation>
+
+      <presentation id="CoworkEDRIntegrationMachine">
+        <textBox refId="CoworkEDRIntegrationValue"><label>Full local path to the signed EDR sensor package:</label></textBox>
+      </presentation>
+
+      <presentation id="CoworkEDRVendorMachine">
+        <textBox refId="CoworkEDRVendorValue"><label>EDR vendor identifier in lowercase:</label></textBox>
+      </presentation>
+
+    </presentationTable>
+
+  </resources>
+</policyDefinitionResources>
