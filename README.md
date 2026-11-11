@@ -2,18 +2,10 @@
 
 # Claude Desktop Enterprise Group Policy Templates
 
-### Centralized Claude Desktop policy management for Windows domains and RDS
+### ADMX / ADML templates for centralized Claude Desktop configuration on Windows
 
-<p>
-  <img alt="Platform" src="https://img.shields.io/badge/Platform-Windows%2011%20%7C%20Server%202019%20%7C%202022%20%7C%202025-0078D4?style=for-the-badge&logo=windows" />
-  <img alt="Management" src="https://img.shields.io/badge/Management-Group%20Policy-5C2D91?style=for-the-badge" />
-  <img alt="Template" src="https://img.shields.io/badge/Template-ADMX%20%2B%20ADML-2EA44F?style=for-the-badge" />
-  <img alt="Version" src="https://img.shields.io/badge/Version-V5-orange?style=for-the-badge" />
-</p>
-
-<p>
-  Custom Administrative Templates for managing Claude Desktop enterprise registry settings through Active Directory Group Policy.
-</p>
+**Template:** `ClaudeDesktopEnterpriseV5`  
+**Platforms:** Windows 11 · Windows Server 2019 · Windows Server 2022 · Windows Server 2025
 
 </div>
 
@@ -21,198 +13,93 @@
 
 ## Overview
 
-This package provides the final custom Administrative Template files used to manage Claude Desktop in a Windows domain:
+`ClaudeDesktopEnterpriseV5` provides custom Windows Administrative Templates for managing Claude Desktop enterprise settings through Active Directory Group Policy.
+
+The package consists of:
 
 | File | Purpose |
 |---|---|
-| `ClaudeDesktopEnterpriseV5.admx` | Language-neutral policy definitions and registry mappings |
-| `en-US/ClaudeDesktopEnterpriseV5.adml` | English names, descriptions, help text, and policy interface resources |
+| `ClaudeDesktopEnterpriseV5.admx` | Language-neutral Group Policy definitions and registry mappings |
+| `en-US/ClaudeDesktopEnterpriseV5.adml` | English policy names, descriptions, help text, and presentation resources |
 
-> [!IMPORTANT]
-> These templates configure for manageing Claude Desktop policy registry values. 
+The templates translate Claude Desktop's enterprise registry settings into standard **Computer Configuration** and **User Configuration** policies. This removes the need to configure supported Claude settings manually with Registry Editor and makes configuration consistent across domain-managed Windows systems.
+
+> **Note:** These templates configure Claude Desktop policy values only. They do not install, update, or remove the Claude Desktop application.
 
 ---
 
 ## Supported Windows Platforms
 
-| Operating system | Intended use |
+| Operating system | Usage |
 |---|---|
-| **Windows 11** | Domain-joined workstation policy management |
-| **Windows Server 2019** | Server and Remote Desktop Session Host policy management |
-| **Windows Server 2022** | Server and Remote Desktop Session Host policy management |
-| **Windows Server 2025** | Server and Remote Desktop Session Host policy management |
-
-The templates use standard ADMX/ADML Group Policy definitions and registry-backed policy values under `SOFTWARE\Policies\Claude`.
+| **Windows 11** | Domain-managed workstations |
+| **Windows Server 2019** | Servers and Remote Desktop Session Hosts |
+| **Windows Server 2022** | Servers and Remote Desktop Session Hosts |
+| **Windows Server 2025** | Servers and Remote Desktop Session Hosts |
 
 ---
 
-## Why This Was Created
-
-Claude Desktop enterprise settings are configured through these registry locations:
-
-```text
-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Claude
-HKEY_CURRENT_USER\SOFTWARE\Policies\Claude
-```
-
-Editing these values manually is acceptable for testing, but it does not provide consistent control across domain-joined computers, shared Remote Desktop Session Hosts, or multiple user profiles.
-
-The templates convert the documented registry settings into standard Group Policy controls so administrators can:
-
-<table>
-<tr>
-<td width="50%">
-
-### Centralize configuration
-
-- Manage Claude Desktop through GPMC
-- Apply machine-wide RDS policies
-- Apply user-specific settings when required
-- Maintain consistent settings across servers
-
-</td>
-<td width="50%">
-
-### Improve operations
-
-- Verify settings with `gpresult`
-- Audit values in the registry
-- Prevent user-managed update behavior
-- Separate application deployment from policy management
-
-</td>
-</tr>
-</table>
-
-The original operational requirement was a Windows Server Remote Desktop Services environment. The template is intended for Windows 11 and Windows Server 2019, 2022, and 2025; the RDS implementation that initiated this work used Windows Server 2022 where Claude Desktop per-user updates could conflict with active or disconnected user sessions. Central policy control allows automatic updates to be disabled and application servicing to be performed during a controlled maintenance window.
-
----
-
-## Architecture
-
-```mermaid
-flowchart TD
-    A[Active Directory Group Policy] --> B[ClaudeDesktopEnterpriseV5.admx]
-    A --> C[ClaudeDesktopEnterpriseV5.adml]
-    B --> D[Computer Configuration]
-    B --> E[User Configuration]
-    D --> F[HKLM\\SOFTWARE\\Policies\\Claude]
-    E --> G[HKCU\\SOFTWARE\\Policies\\Claude]
-    F --> H[Claude Desktop on RDS Host]
-    G --> H
-    H --> I[Consistent enterprise configuration]
-```
-
-### Policy precedence
+## How It Works
 
 ```mermaid
 flowchart LR
-    U[User policy in HKCU] --> P{Same setting configured in HKLM?}
-    P -- No --> R[Use user policy]
-    P -- Yes --> M[Use machine policy]
+    A[Active Directory Group Policy] --> B[ClaudeDesktopEnterpriseV5 ADMX / ADML]
+    B --> C[Computer Configuration]
+    B --> D[User Configuration]
+    C --> E[HKLM\\SOFTWARE\\Policies\\Claude]
+    D --> F[HKCU\\SOFTWARE\\Policies\\Claude]
+    E --> G[Claude Desktop]
+    F --> G
 ```
 
-The templates support both scopes:
+Claude Desktop enterprise policies are written to:
 
 ```text
-Computer Configuration -> HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Claude
-User Configuration     -> HKEY_CURRENT_USER\SOFTWARE\Policies\Claude
+Computer policies:
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Claude
+
+User policies:
+HKEY_CURRENT_USER\SOFTWARE\Policies\Claude
 ```
 
-For shared RDS servers, update, security, and feature-control settings should normally be configured under **Computer Configuration**.
+Machine policies are useful for enforcing a consistent configuration across the entire computer or shared RDS host. User policies provide per-user configuration where that scope is appropriate.
 
 ---
 
-## Included Policy Areas
+## Available Policy Categories
 
-<div align="center">
+The template organizes Claude Desktop management into the following categories:
 
-| Policy area | Purpose |
-|---|---|
-| 🔄 **Automatic Updates** | Disable user-driven updates and define update enforcement behavior |
-| 🔐 **Authentication** | Restrict sign-in to approved organization UUIDs |
-| 🧩 **Features** | Control extensions, extension directory access, and local MCP servers |
-| 💻 **Claude Code** | Control Claude Code availability and default effort level |
-| 🗂️ **Cowork** | Control Secure VM, workspace folders, and EDR integration |
+- **Authentication**
+- **Automatic Updates**
+- **Claude Code**
+- **Cowork**
+- **Features**
 
-</div>
+### Included Settings
 
-### Registry mappings
+| Group Policy setting | Registry value | Type | Scope |
+|---|---|---|---|
+| Disable Automatic Updates | `disableAutoUpdates` | `REG_DWORD` | Computer / User |
+| Automatic Update Enforcement Hours | `autoUpdaterEnforcementHours` | `REG_DWORD` | Computer / User |
+| Force Login Organization UUID | `forceLoginOrgUUID` | `REG_SZ` | Computer / User |
+| Enable Desktop Extensions | `isDesktopExtensionEnabled` | `REG_DWORD` | Computer / User |
+| Enable Desktop Extension Directory | `isDesktopExtensionDirectoryEnabled` | `REG_DWORD` | Computer / User |
+| Enable Local Development MCP Servers | `isLocalDevMcpEnabled` | `REG_DWORD` | Computer / User |
+| Enable Claude Code for Desktop | `isClaudeCodeForDesktopEnabled` | `REG_DWORD` | Computer / User |
+| Default Claude Code Effort Level | `effortLevel` | `REG_SZ` | Computer / User |
+| Enable Secure VM and Cowork Features | `secureVmFeaturesEnabled` | `REG_DWORD` | Computer / User |
+| Allowed Workspace Folders | `allowedWorkspaceFolders` | `REG_SZ` | Computer / User |
+| Cowork EDR Sensor Package Path | `coworkEDRIntegration` | `REG_SZ` | Computer |
+| Cowork EDR Integration Vendor | `coworkEDRIntegrationVendor` | `REG_SZ` | Computer |
 
-| Group Policy setting | Registry value | Registry type | Scope |
-|---|---|---:|---|
-| Disable Automatic Updates | `disableAutoUpdates` | `REG_DWORD` | Computer and User |
-| Automatic Update Enforcement Hours | `autoUpdaterEnforcementHours` | `REG_DWORD` | Computer and User |
-| Force Login Organization UUID | `forceLoginOrgUUID` | `REG_SZ` | Computer and User |
-| Enable Desktop Extensions | `isDesktopExtensionEnabled` | `REG_DWORD` | Computer and User |
-| Enable Desktop Extension Directory | `isDesktopExtensionDirectoryEnabled` | `REG_DWORD` | Computer and User |
-| Enable Local Development MCP Servers | `isLocalDevMcpEnabled` | `REG_DWORD` | Computer and User |
-| Enable Claude Code for Desktop | `isClaudeCodeForDesktopEnabled` | `REG_DWORD` | Computer and User |
-| Default Claude Code Effort Level | `effortLevel` | `REG_SZ` | Computer and User |
-| Enable Secure VM and Cowork Features | `secureVmFeaturesEnabled` | `REG_DWORD` | Computer and User |
-| Allowed Workspace Folders | `allowedWorkspaceFolders` | `REG_SZ` | Computer and User |
-| Cowork EDR Sensor Package Path | `coworkEDRIntegration` | `REG_SZ` | Computer only |
-| Cowork EDR Integration Vendor | `coworkEDRIntegrationVendor` | `REG_SZ` | Computer only |
-
-> [!NOTE]
-> Settings that accept multiple entries, such as organization UUIDs or allowed workspace folders, are stored as JSON text in a `REG_SZ` value, not as `REG_MULTI_SZ`.
+Where Claude requires structured multiple values, the value is stored using the format documented by Claude, including JSON-formatted text where applicable.
 
 ---
 
-## Final V5 Corrections
+## Installation
 
-The final templates include the following corrections made during validation:
-
-<table>
-<tr>
-<th>Issue</th>
-<th>Final correction</th>
-</tr>
-<tr>
-<td>Policies with input elements failed to load</td>
-<td>Added a matching ADML presentation reference for every ADMX <code>&lt;elements&gt;</code> policy.</td>
-</tr>
-<tr>
-<td>Duplicate namespace error</td>
-<td>Only one ADMX file may use <code>Anthropic.Policies.ClaudeDesktop</code> in the Central Store.</td>
-</tr>
-<tr>
-<td>Category and policy names appeared indented</td>
-<td>All visible ADML strings are written inline without leading line breaks, tabs, or indentation.</td>
-</tr>
-<tr>
-<td>Presentation controls did not match policy elements</td>
-<td>Presentation IDs and element <code>refId</code> values now match exactly.</td>
-</tr>
-<tr>
-<td>EDR settings appeared in the wrong scope</td>
-<td>EDR integration policies are exposed only under Computer Configuration.</td>
-</tr>
-</table>
-
-### Whitespace correction
-
-The final ADML intentionally uses inline display strings:
-
-```xml
-<string id="CAT_Authentication">Authentication</string>
-```
-
-This multi-line form is avoided for titles and category names:
-
-```xml
-<string id="CAT_Authentication">
-    Authentication
-</string>
-```
-
-Some Group Policy Editor views may preserve the leading newline and indentation from a multi-line XML text node. The inline format prevents visible spaces before category and policy names.
-
----
-
-## Central Store Installation
-
-### Required structure
+Copy the template files to the Active Directory Group Policy Central Store:
 
 ```text
 \\<domain>\SYSVOL\<domain>\Policies\PolicyDefinitions\
@@ -222,31 +109,31 @@ Some Group Policy Editor views may preserve the leading newline and indentation 
     └── ClaudeDesktopEnterpriseV5.adml
 ```
 
-### Installation flow
+After copying the files, close and reopen **Group Policy Management Console** / **Group Policy Management Editor**.
 
-```mermaid
-flowchart LR
-    A[Archive older or duplicate Claude templates] --> B[Copy V5 ADMX]
-    B --> C[Copy V5 ADML to en-US]
-    C --> D[Close all GPMC windows]
-    D --> E[Reopen Group Policy Editor]
-    E --> F[Validate Claude Desktop categories]
+You should then see:
+
+```text
+Computer Configuration
+└── Policies
+    └── Administrative Templates
+        └── Claude Desktop
+
+User Configuration
+└── Policies
+    └── Administrative Templates
+        └── Claude Desktop
 ```
 
-1. Archive or remove duplicate or obsolete Claude ADMX and ADML files that use the same target namespace.
-2. Copy `ClaudeDesktopEnterpriseV5.admx` to `PolicyDefinitions`.
-3. Copy `ClaudeDesktopEnterpriseV5.adml` to `PolicyDefinitions\en-US`.
-4. Close every open Group Policy Management Console and Group Policy Management Editor window.
-5. Reopen GPMC and confirm the **Claude Desktop** category loads without errors.
-
-> [!WARNING]
-> Do not keep another Claude ADMX in the Central Store if it defines the same target namespace `Anthropic.Policies.ClaudeDesktop`.
+Only one ADMX template using the same Claude Desktop target namespace should exist in the Central Store.
 
 ---
 
-## Recommended Windows RDS Configuration
+## Example: Disable Claude Desktop Automatic Updates
 
-For Windows Server 2019, 2022, or 2025 used as an RDS Session Host, configure the automatic-update policy at machine scope:
+For centrally managed systems, the template allows automatic updates to be controlled through Group Policy.
+
+Configure:
 
 ```text
 Computer Configuration
@@ -254,169 +141,126 @@ Computer Configuration
     └── Administrative Templates
         └── Claude Desktop
             └── Automatic Updates
-                └── Disable Automatic Updates = Enabled
+                └── Disable Automatic Updates
 ```
 
-Expected registry result:
+Set the policy to:
 
 ```text
-Key:   HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Claude
-Name:  disableAutoUpdates
+Enabled
+```
+
+The resulting machine policy is:
+
+```text
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Claude
+
+Value: disableAutoUpdates
 Type:  REG_DWORD
 Data:  1
 ```
 
-### Managed update model
-
-```mermaid
-sequenceDiagram
-    participant IT as IT Administration
-    participant GPO as Group Policy
-    participant RDS as RDS Session Host
-    participant U as RDS Users
-
-    IT->>GPO: Enable Disable Automatic Updates
-    GPO->>RDS: Write disableAutoUpdates = 1
-    RDS-->>U: Prevent user-driven Claude updates
-    IT->>RDS: Start maintenance window
-    IT->>RDS: Log off active and disconnected sessions
-    IT->>RDS: Deploy approved Claude package
-    IT->>RDS: Validate package and policy state
-```
-
-This model prevents Claude Desktop from attempting independent per-user updates during shared RDS sessions. Application updates can be performed centrally after active and disconnected sessions have been logged off.
+This is particularly useful on multi-user Remote Desktop Session Hosts where application servicing should be controlled centrally rather than independently by each user session.
 
 ---
 
-## Verification
+## RDS Deployment Model
 
-### Refresh Group Policy
+```mermaid
+flowchart TD
+    A[IT Administrator] --> B[Claude Desktop Group Policy]
+    B --> C[Windows Server RDS Host]
+    C --> D[User Session 1]
+    C --> E[User Session 2]
+    C --> F[User Session N]
+    A --> G[Controlled Application Maintenance]
+    G --> C
+```
+
+For an RDS environment, machine-level policies provide a common Claude Desktop configuration for every session on the host.
+
+A centrally managed servicing model can therefore separate:
+
+- **Application configuration** through Group Policy
+- **Application installation and updates** through the organization's software deployment process
+- **Maintenance** through controlled RDS servicing windows
+
+---
+
+## Verify Applied Policies
+
+Refresh Group Policy:
 
 ```cmd
 gpupdate /force
 ```
 
-### Verify the machine-level update policy
+Verify the automatic-update policy:
 
 ```cmd
 reg query "HKLM\SOFTWARE\Policies\Claude" /v disableAutoUpdates
 ```
 
-Expected result:
+Expected result when the policy is enabled:
 
 ```text
 disableAutoUpdates    REG_DWORD    0x1
 ```
 
-### Verify applied computer policies
+Check applied computer GPOs:
 
 ```cmd
 gpresult /r /scope computer
 ```
 
-### Generate a detailed HTML report
+Generate a detailed Group Policy report:
 
 ```cmd
 gpresult /h C:\Temp\Claude-GPO-Result.html /f
 ```
 
-### Verify user-scoped Claude policies
+For user-level Claude policies:
 
 ```cmd
 reg query "HKCU\SOFTWARE\Policies\Claude"
 ```
 
-### Quick health checklist
+---
 
-- [ ] Claude Desktop V5 appears in Administrative Templates.
-- [ ] No namespace or presentation errors are displayed.
-- [ ] Category and policy names contain no leading spaces.
-- [ ] The intended GPO appears in `gpresult`.
-- [ ] `disableAutoUpdates` exists as `REG_DWORD` with value `1`.
-- [ ] Old Claude ADMX versions have been removed from the Central Store.
-- [ ] Application updates are handled through a controlled maintenance process.
+## Important Deployment Notes
+
+- Keep the ADMX and ADML base filenames identical: `ClaudeDesktopEnterpriseV5`.
+- Place the ADML file in the appropriate language resource directory, such as `en-US`.
+- Do not keep duplicate Claude ADMX files that define the same target namespace in the Central Store.
+- Use **Computer Configuration** for settings that need to apply consistently to every user of a shared server or RDS host.
+- Validate policy behavior before deploying a new configuration broadly through Active Directory.
+- Review the current Claude enterprise documentation before extending the template with new registry settings.
 
 ---
 
-## Troubleshooting
+## Official Documentation
 
-<details>
-<summary><strong>Namespace is already defined</strong></summary>
+The registry settings represented by these templates are based on Claude's official enterprise configuration documentation:
 
-Another ADMX file in the Central Store uses the same target namespace. Search for:
+**[Enterprise configuration for Claude Desktop](https://support.claude.com/en/articles/12622667-enterprise-configuration-for-claude-desktop)**
 
-```text
-Anthropic.Policies.ClaudeDesktop
-```
-
-Keep only the final V5 ADMX file and archive older versions.
-
-</details>
-
-<details>
-<summary><strong>An appropriate resource file could not be found</strong></summary>
-
-Confirm that the ADML filename matches the ADMX base filename and that the ADML exists in the correct language folder:
-
-```text
-PolicyDefinitions\ClaudeDesktopEnterpriseV5.admx
-PolicyDefinitions\en-US\ClaudeDesktopEnterpriseV5.adml
-```
-
-</details>
-
-<details>
-<summary><strong>Policy contains elements but has no presentation reference</strong></summary>
-
-The ADMX policy must include a presentation reference, and the ADML presentation must use matching `refId` values for the ADMX elements.
-
-</details>
-
-<details>
-<summary><strong>Category or policy names contain leading spaces</strong></summary>
-
-Define visible ADML strings on a single line. Avoid line breaks and indentation inside display-name `<string>` elements.
-
-</details>
-
----
-
-## Operational Notes
-
-- Use **Computer Configuration** for shared RDS hosts so every session receives the same machine policy.
-- Keep ADMX and ADML base filenames identical.
-- Retain `en-US` as the English resource folder.
-- Test future revisions in a non-production Group Policy environment.
-- Use a maintenance window for Claude Desktop package updates on RDS.
-- Confirm that both active and disconnected user sessions are logged off before servicing application packages.
-- Review the official Claude documentation before adding new policies or changing value formats.
-
----
-
-## Source
-
-The policy names, registry paths, supported values, and enterprise configuration behavior are based on the official Claude documentation:
-
-- [Enterprise configuration for Claude Desktop](https://support.claude.com/en/articles/12622667-enterprise-configuration-for-claude-desktop)
-
----
-
-<div align="center">
-
-### Final result
-
-**Claude Desktop policies can now be administered through standard Active Directory Group Policy instead of manual registry changes.**
-
-`ADMX` · `ADML` · `Windows Server 2022` · `RDS` · `Group Policy`
-
-</div>
+The official documentation should remain the authoritative reference for supported Claude Desktop enterprise settings, registry value formats, and future configuration changes.
 
 ---
 
 ## About the System Administrator
 
-For more technical content like this, as well as professional information, support, and consulting on **Active Directory, Group Policy, Windows Server, Remote Desktop Services, infrastructure operations, and systems administration**, you can connect with the system administrator through Medium.
+For more technical content like this, as well as professional **technical support and consulting** related to **Active Directory, Group Policy, Windows Server, Remote Desktop Services, infrastructure operations, and systems administration**, you can connect with the system administrator through Medium.
 
-**Contact & technical articles:** [ahmetdoruk.medium.com](https://ahmetdoruk.medium.com)
+**Technical articles & contact:** [ahmetdoruk.medium.com](https://ahmetdoruk.medium.com)
 
-Follow the Medium page for practical enterprise IT guides, troubleshooting notes, implementation examples, and real-world system administration content.
+The Medium page focuses on practical enterprise IT implementations, troubleshooting, infrastructure administration, and real-world system management topics.
+
+---
+
+<div align="center">
+
+**ClaudeDesktopEnterpriseV5**  
+`ADMX` · `ADML` · `Active Directory` · `Group Policy` · `Windows` · `Windows Server` · `RDS`
+
+</div>
