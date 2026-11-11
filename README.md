@@ -29,7 +29,7 @@ This package provides the final custom Administrative Template files used to man
 | `en-US/ClaudeDesktopEnterpriseV5.adml` | English names, descriptions, help text, and policy interface resources |
 
 > [!IMPORTANT]
-> These templates configure Claude Desktop policy registry values. Backup registry for any problem.
+> These templates configure for manageing Claude Desktop policy registry values. 
 
 ---
 
